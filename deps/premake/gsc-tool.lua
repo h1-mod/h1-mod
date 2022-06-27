@@ -56,6 +56,13 @@ function gsc_tool.project()
         gsc_tool.source, 
         path.join(dependencies.basePath, "extra/gsc-tool")
     }
+	
+	-- https://github.com/xensik/gsc-tool/blob/dev/premake5.lua#L25
+	-- adding these build options fixes a bunch of parser stuff
+	filter "action:vs*"
+		buildoptions "/bigobj"
+		buildoptions "/Zc:__cplusplus"
+	filter {}
 end
 
 table.insert(dependencies, gsc_tool)

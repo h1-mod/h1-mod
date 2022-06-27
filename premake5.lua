@@ -268,13 +268,6 @@ filter "configurations:Debug"
 	defines {"DEBUG", "_DEBUG"}
 filter {}
 
--- https://github.com/xensik/gsc-tool/blob/dev/premake5.lua#L25
--- adding these build options fixes a bunch of parser stuff
-filter "action:vs*"
-	buildoptions "/bigobj"
-	buildoptions "/Zc:__cplusplus"
-filter {}
-
 project "common"
 kind "StaticLib"
 language "C++"
