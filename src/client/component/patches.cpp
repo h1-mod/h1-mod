@@ -428,7 +428,12 @@ namespace patches
 			cl_gamepad_scrolling_buttons_hook.create(0x133210_b, cl_gamepad_scrolling_buttons_stub);
 
 			// Prevent the game from modifying Windows microphone volume (since voice chat isn't used)
-			utils::hook::set<uint8_t>(0x5BEEA0_b, 0xC3); // Mixer_SetWaveInRecordLevels
+			// utils::hook::set<uint8_t>(0x5BEEA0_b, 0xC3); // Mixer_SetWaveInRecordLevels
+
+			// Disable usage of voice chat
+			dvars::override::register_bool("cl_voice", 0, game::DVAR_FLAG_NONE);
+
+			utils::hook::set<uint8_t>(0x5BF4E0_b, 0xC3); // Voice_Init
 		}
 	};
 }
