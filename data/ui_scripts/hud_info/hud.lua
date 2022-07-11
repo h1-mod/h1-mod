@@ -3,6 +3,10 @@ local barheight = 16
 local textheight = 13
 local textoffsety = barheight / 2 - textheight / 2
 
+game:addlocalizedstring("MPHUD_FPS", "FPS: ")
+game:addlocalizedstring("MPHUD_LATENCY", "Latency: ")
+game:addlocalizedstring("MPHUD_LATENCY_MS", " ms")
+
 function createinfobar()
 	local infobar = LUI.UIElement.new({
 		left = 213,
@@ -78,7 +82,7 @@ function populateinfobar(infobar)
 
 	if (Engine.GetDvarBool("cg_infobar_fps")) then
 		infobar:addElement(infoelement({
-			label = "FPS: ",
+			label = Engine.Localize("@MPHUD_FPS"),
 			getvalue = function()
 				return game:getfps()
 			end,
@@ -89,9 +93,9 @@ function populateinfobar(infobar)
 
 	if (Engine.GetDvarBool("cg_infobar_ping")) then
 		infobar:addElement(infoelement({
-			label = "Latency: ",
+			label = Engine.Localize("@MPHUD_LATENCY"),
 			getvalue = function()
-				return game:getping() .. " ms"
+				return game:getping() .. Engine.Localize("@MPHUD_LATENCY_MS")
 			end,
 			width = 115,
 			interval = 100

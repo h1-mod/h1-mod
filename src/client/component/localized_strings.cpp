@@ -30,12 +30,44 @@ namespace localized_strings
 		}
 	}
 
+	bool add(const std::string& key, const std::string& value)
+	{
+		bool result;
+
+		localized_overrides.access([&](localized_map& map)
+		{
+			if (!map.contains(key))
+			{
+				map[key] = value;
+				result = true;
+				return;
+			}
+
+			// put a warning in the console that the localized string is already existing
+			result = false;
+		});
+
+		return result;
+	}
+
 	void override(const std::string& key, const std::string& value)
 	{
 		localized_overrides.access([&](localized_map& map)
 		{
 			map[key] = value;
 		});
+	}
+
+	bool exists(const std::string& key)
+	{
+		bool result;
+
+		localized_overrides.access([&](const localized_map& map)
+		{
+			result = map.contains(key);
+		});
+
+		return result;
 	}
 
 	class component final : public component_interface

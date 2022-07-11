@@ -1,5 +1,7 @@
 local pcdisplay = luiglobals.require("LUI.PCDisplay")
 
+game:addlocalizedstring("LUA_MENU_TELEMETRY", "TELEMETRY")
+
 game:addlocalizedstring("LUA_MENU_FPS", "FPS Counter")
 game:addlocalizedstring("LUA_MENU_FPS_DESC", "Show FPS Counter.")
 
@@ -112,7 +114,7 @@ pcdisplay.CreateOptions = function(menu)
 		end
 	)
 		
-	createdivider(menu, "TELEMETRY")
+	createdivider(menu, Engine.Localize("@LUA_MENU_TELEMETRY"))
 
 	LUI.Options.CreateOptionButton(menu, "cg_infobar_ping", "@LUA_MENU_LATENCY", "@LUA_MENU_LATENCY_DESC", {{
 		text = "@LUA_MENU_ENABLED",

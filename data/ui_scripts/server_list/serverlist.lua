@@ -22,17 +22,17 @@ local columns = {
 		dataindex = 1
 	},
 	{
-		offset = 700,
+		offset = 725,
 		text = "@MENU_TYPE1",
 		dataindex = 3
 	},
 	{
-		offset = 950,
+		offset = 920,
 		text = "@MENU_NUMPLAYERS",
 		dataindex = 2
 	},
 	{
-		offset = 1100,
+		offset = 1070,
 		text = "@MENU_PING",
 		dataindex = 4
 	},

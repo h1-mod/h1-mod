@@ -5,6 +5,12 @@ end
 updatecancelled = false
 updater.cancelupdate()
 
+game:addlocalizedstring("UPDATER_POPUP_NO_UPDATES_AVAILABLE", "No updates available")
+game:addlocalizedstring("UPDATER_POPUP_AVAILABLE_UPDATE_TEXT", "An update is available, proceed with installation?")
+game:addlocalizedstring("UPDATER_POPUP_SUCCESSFUL", "Update successful")
+game:addlocalizedstring("UPDATER_POPUP_RESTART_POPUP_TEXT", "Update requires restart")
+game:addlocalizedstring("UPDATER_POPUP_CHECKING_FOR_UPDATES", "Checking for updates...")
+
 function startupdatecheck(popup, autoclose)
 	Engine.GetLuiRoot():registerEventHandler("update_check_done", function(element, event)
 		if (updatecancelled) then
@@ -12,7 +18,7 @@ function startupdatecheck(popup, autoclose)
 		end
 
 		if (not updater.getupdatecheckstatus()) then
-			popup.text:setText("Error: " .. updater.getlasterror())
+			popup.text:setText(Engine.Localize("@MENU_ERROR") .. ": " .. updater.getlasterror())
 			return
 		end
 
@@ -22,13 +28,13 @@ function startupdatecheck(popup, autoclose)
 				return
 			end
 
-			popup.text:setText("No updates available")
+			popup.text:setText(Engine.Localize("UPDATER_POPUP_NO_UPDATES_AVAILABLE"))
 			return
 		end
 
 		LUI.yesnopopup({
-			title = "NOTICE",
-			text = "An update is available, proceed with installation?",
+			title = Engine.Localize("@MENU_NOTICE"),
+			text = Engine.Localize("UPDATER_POPUP_AVAILABLE_UPDATE_TEXT"),
 			callback = function(result)
 				if (result) then
 					startupdatedownload(popup, autoclose)
@@ -55,7 +61,7 @@ function startupdatedownload(popup, autoclose)
 		end
 
 		file = previousfile
-		popup.text:setText("Downloading file " .. updater.getcurrentfile() .. "...")
+		popup.text:setText(Engine.Localize("@EXE_DOWNLOADING") .. " " .. updater.getcurrentfile() .. "...")
 	end)
 
 	Engine.GetLuiRoot():registerEventHandler("update_done", function(element, event)
@@ -66,17 +72,17 @@ function startupdatedownload(popup, autoclose)
 		end
 
 		if (not updater.getupdatedownloadstatus()) then
-			popup.text:setText("Error: " .. updater.getlasterror())
+			popup.text:setText(Engine.Localize("@MENU_ERROR") .. ": " .. updater.getlasterror())
 			return
 		end
 
-		popup.text:setText("Update successful")
+		popup.text:setText(Engine.Localize("UPDATER_POPUP_SUCCESSFUL"))
 
 		if (updater.isrestartrequired()) then
 			LUI.confirmationpopup({
-				title = "RESTART REQUIRED",
-				text = "Update requires restart",
-				buttontext = "RESTART",
+				title = Engine.Localize("@MENU_CCS_RESTART_CONFIRMATION_TITLE"),
+				text = Engine.Localize("UPDATER_POPUP_RESTART_POPUP_TEXT"),
+				buttontext = Engine.Localize("@MENU_CCS_RESTART_BUTTON_LABEL"),
 				callback = function()
 					updater.relaunch()
 				end
@@ -97,7 +103,7 @@ function updaterpopup(oncancel)
 	return LUI.openpopupmenu("generic_waiting_popup_", {
 		oncancel = oncancel,
 		withcancel = true,
-		text = "Checking for updates..."
+		text = Engine.Localize("UPDATER_POPUP_CHECKING_FOR_UPDATES")
 	})
 end
 

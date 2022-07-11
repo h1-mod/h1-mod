@@ -29,6 +29,8 @@
 #include <utils/io.hpp>
 #include <utils/binary_resource.hpp>
 
+#include "steam/steam.hpp"
+
 namespace ui_scripting
 {
 	namespace
@@ -219,7 +221,18 @@ namespace ui_scripting
 			game_type["addlocalizedstring"] = [](const game&, const std::string& string,
 				const std::string& value)
 			{
+				return localized_strings::add(string, value);
+			};
+
+			game_type["replacelocalizedstring"] = [](const game&, const std::string& string,
+				const std::string& value)
+			{
 				localized_strings::override(string, value);
+			};
+
+			game_type["localizedstringexists"] = [](const game&, const std::string& string)
+			{
+				return localized_strings::exists(string);
 			};
 
 			game_type["sharedset"] = [](const game&, const std::string& key, const std::string& value)
@@ -341,6 +354,11 @@ namespace ui_scripting
 			game_type["virtuallobbypresentable"] = [](const game&)
 			{
 				::game::Dvar_SetFromStringByNameFromSource("virtualLobbyPresentable", "1", ::game::DvarSetSource::DVAR_SOURCE_INTERNAL);
+			};
+
+			game_type["getcurrentgamelanguage"] = [](const game&)
+			{
+				return steam::SteamApps()->GetCurrentGameLanguage();
 			};
 
 			auto server_list_table = table();
