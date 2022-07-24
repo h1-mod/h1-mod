@@ -4,6 +4,8 @@
 
 namespace fastfiles
 {
+	bool exists(const std::string& zone);
+
 	std::string get_current_fastfile();
 
 	void enum_assets(const game::XAssetType type,

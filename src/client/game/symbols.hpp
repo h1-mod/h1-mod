@@ -164,6 +164,8 @@ namespace game
 	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{0x0, 0x0};
 	WEAK symbol<XAssetHeader(XAssetType type, const char* name, 
 		int createDefault)> DB_FindXAssetHeader{0x1F1120, 0x3950C0};
+	WEAK symbol<bool(const char* zone, int source)> DB_FileExists{0x1F0D50, 0x394DC0};
+	WEAK symbol<void(XZoneInfo* zoneInfo, unsigned int zoneCount, DBSyncMode syncMode)> DB_LoadXAssets{0x1F31E0, 0x397500};
 
 	WEAK symbol<void(int clientNum, const char* menu, 
 		int a3, int a4, unsigned int a5)> LUI_OpenMenu{0x3F20A0, 0x1E1210};
@@ -238,6 +240,7 @@ namespace game
 	WEAK symbol<int> connectionState{0x0, 0x2EC82C8};
 
 	WEAK symbol<int> g_poolSize{0x0, 0x0};
+	WEAK symbol<int> g_compressor{0x2574804, 0x3962804};
 
 	WEAK symbol<scrVarGlob_t> scr_VarGlob{0xBD80E00, 0xB138180};
 	WEAK symbol<scrVmPub_t> scr_VmPub{0xC3F4E20, 0xB7AE3C0};

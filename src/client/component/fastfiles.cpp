@@ -82,6 +82,43 @@ namespace fastfiles
 
 			return result;
 		}
+
+		utils::hook::detour db_read_stream_file_hook;
+		void db_read_stream_file_stub(int a1, int a2)
+		{
+			// always use lz4 compressor type when reading stream files
+			*game::g_compressor = 4;
+			return db_read_stream_file_hook.invoke<void>(a1, a2);
+		}
+
+		void skip_extra_zones_stub(utils::hook::assembler& a)
+		{
+			const auto skip = a.newLabel();
+			const auto original = a.newLabel();
+
+			a.pushad64();
+			a.test(esi, game::DB_ZONE_CUSTOM); // allocFlags
+			a.jnz(skip);
+
+			a.bind(original);
+			a.popad64();
+			a.mov(rdx, 0x8E2F80_b);
+			a.mov(rcx, rbp);
+			a.call(0x840A20_b);
+			a.jmp(0x398070_b);
+
+			a.bind(skip);
+			a.popad64();
+			a.mov(r14d, game::DB_ZONE_CUSTOM);
+			a.not_(r14d);
+			a.and_(esi, r14d);
+			a.jmp(0x39814F_b);
+		}
+	}
+
+	bool exists(const std::string& zone)
+	{
+		return game::DB_FileExists(zone.data(), 0);
 	}
 
 	std::string get_current_fastfile()
@@ -113,6 +150,52 @@ namespace fastfiles
 			db_find_xasset_header_hook.create(game::DB_FindXAssetHeader, db_find_xasset_header_stub);
 
 			g_dump_scripts = dvars::register_bool("g_dumpScripts", false, game::DVAR_FLAG_NONE, "Dump GSC scripts");
+
+			// Allow loading of unsigned fastfiles
+			if (!game::environment::is_sp())
+			{
+				utils::hook::nop(0x368153_b, 2); // DB_InflateInit
+			}
+
+			// Allow loading of mixed compressor types
+			utils::hook::nop(SELECT_VALUE(0x1C4BE7_b, 0x3687A7_b), 2);
+
+			// Fix compressor type on streamed file load
+			db_read_stream_file_hook.create(SELECT_VALUE(0x1FB9D0_b, 0x3A1BF0_b), db_read_stream_file_stub);
+
+			// Don't load extra zones with loadzone
+			if (!game::environment::is_sp())
+			{
+				// TODO: SP?
+				utils::hook::nop(0x398061_b, 15);
+				utils::hook::jump(0x398061_b, utils::hook::assemble(skip_extra_zones_stub), true);
+			}
+
+			command::add("loadzone", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					console::info("usage: loadzone <zone>\n");
+					return;
+				}
+
+				const char* name = params.get(1);
+
+				if (!fastfiles::exists(name))
+				{
+					console::warn("loadzone: zone \"%s\" could not be found!\n", name);
+					return;
+				}
+
+				game::XZoneInfo info;
+				info.name = name;
+				info.allocFlags = game::DB_ZONE_COMMON;
+				info.freeFlags = 0;
+
+				info.allocFlags |= game::DB_ZONE_CUSTOM; // skip extra zones with this flag!
+
+				game::DB_LoadXAssets(&info, 1, game::DBSyncMode::DB_LOAD_SYNC);
+			});
 		}
 	};
 }
